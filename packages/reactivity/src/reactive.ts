@@ -56,6 +56,8 @@ function targetTypeMap(rawType: string) {
 }
 
 function getTargetType(value: Target) {
+  // 改函数返回目标类型  (TargetType) 0, 1, 2
+  // Object.isExtensible(value)判断是否可扩展(向其添加新属性)
   return value[ReactiveFlags.SKIP] || !Object.isExtensible(value)
     ? TargetType.INVALID
     : targetTypeMap(toRawType(value))
@@ -199,12 +201,12 @@ function createReactiveObject(
   ) {
     return target
   }
-  // target already has corresponding Proxy
+  // 目标已经有了相应的proxy
   const existingProxy = proxyMap.get(target)
   if (existingProxy) {
     return existingProxy
   }
-  // only a whitelist of value types can be observed.
+  // 仅对白名单的值类型可被观察.
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
