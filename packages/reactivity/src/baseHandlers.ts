@@ -47,6 +47,7 @@ const shallowReadonlyGet = /*#__PURE__*/ createGetter(true, true)
 const arrayInstrumentations = /*#__PURE__*/ createArrayInstrumentations()
 
 function createArrayInstrumentations() {
+  // 返回一个包含了各个重新定义数组方法的一个对象
   const instrumentations: Record<string, Function> = {}
   // instrument identity-sensitive Array methods to account for possible reactive
   // values
@@ -85,7 +86,7 @@ function createGetter(isReadonly = false, shallow = false) {
       return !isReadonly
     } else if (key === ReactiveFlags.IS_READONLY) {
       return isReadonly
-    } else if (key === ReactiveFlags.IS_SHALLOW) {
+    } else if (key === ReactiveFlags.IS_SHALLOW) { // 是否是浅观察（只监听第一层）
       return shallow
     } else if (
       key === ReactiveFlags.RAW &&
@@ -105,16 +106,18 @@ function createGetter(isReadonly = false, shallow = false) {
     const targetIsArray = isArray(target)
 
     if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
+      // 是数组，且key是数组中的方法, arrayInstrumentations: 一个包含多个重新定义数组函数的对象
       return Reflect.get(arrayInstrumentations, key, receiver)
     }
 
     const res = Reflect.get(target, key, receiver)
 
     if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
+      // isNonTrackableKeys: 如果是key是__proto__,__v_isRef,__isVue其中一个，返回true
       return res
     }
 
-    if (!isReadonly) {
+    if (!isReadonly) { // 不是只读的对象，跟踪
       track(target, TrackOpTypes.GET, key)
     }
 
@@ -123,7 +126,7 @@ function createGetter(isReadonly = false, shallow = false) {
     }
 
     if (isRef(res)) {
-      // ref unwrapping - does not apply for Array + integer key.
+      // ref类型：不支持数组或者key为整数
       const shouldUnwrap = !targetIsArray || !isIntegerKey(key)
       return shouldUnwrap ? res.value : res
     }
