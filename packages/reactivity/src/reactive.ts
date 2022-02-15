@@ -215,6 +215,7 @@ function createReactiveObject(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  // proxyMap存储已经proxy的对象
   proxyMap.set(target, proxy)
   return proxy
 }
