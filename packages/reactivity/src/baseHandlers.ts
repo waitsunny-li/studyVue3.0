@@ -89,6 +89,7 @@ function createGetter(isReadonly = false, shallow = false) {
     } else if (key === ReactiveFlags.IS_SHALLOW) { // 是否是浅观察（只监听第一层）
       return shallow
     } else if (
+      // toRaw()方法会运行到这里
       key === ReactiveFlags.RAW &&
       receiver ===
         (isReadonly
@@ -153,19 +154,21 @@ function createSetter(shallow = false) {
     receiver: object
   ): boolean {
     let oldValue = (target as any)[key]
+    // 1、判断是否是浅响应式，以及新值是否是只读方式
     if (!shallow && !isReadonly(value)) {
       if (!isShallow(value)) {
         value = toRaw(value)
         oldValue = toRaw(oldValue)
       }
       if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
+        // 该对象不是数组，且旧值是ref对象，新值不是ref对象，则：直接修改ref对象即可
         oldValue.value = value
         return true
       }
     } else {
       // in shallow mode, objects are set as-is regardless of reactive or not
     }
-
+    // 2、判断key是否是target中的键（数组则是下标）
     const hadKey =
       isArray(target) && isIntegerKey(key)
         ? Number(key) < target.length
@@ -173,6 +176,7 @@ function createSetter(shallow = false) {
     const result = Reflect.set(target, key, value, receiver)
     // don't trigger if target is something up in the prototype chain of original
     if (target === toRaw(receiver)) {
+      // toRaw(receiver): 会触发proxy中get操作，满足会返回target
       if (!hadKey) {
         trigger(target, TriggerOpTypes.ADD, key, value)
       } else if (hasChanged(value, oldValue)) {

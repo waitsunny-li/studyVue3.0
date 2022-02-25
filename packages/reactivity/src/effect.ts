@@ -73,8 +73,10 @@ export class ReactiveEffect<T = any> {
 
   run() {
     if (!this.active) {
+      // 如果当前effect已停用，直接返回原始函数
       return this.fn()
     }
+    // effectStack：存放当前副作用的栈，执行前会压入栈，结束后，会推出栈
     if (!effectStack.includes(this)) {
       try {
         effectStack.push((activeEffect = this))
@@ -142,6 +144,15 @@ export interface ReactiveEffectRunner<T = any> {
   effect: ReactiveEffect
 }
 
+/**
+ * const counter  = reactive({num: 0})
+ * let foo
+ * effect(() => {
+ *  foo = counter.num
+ * })
+ * counter.num = 8
+ * 
+ * */ 
 export function effect<T = any>(
   fn: () => T,
   options?: ReactiveEffectOptions
@@ -156,6 +167,7 @@ export function effect<T = any>(
     if (options.scope) recordEffectScope(_effect, options.scope)
   }
   if (!options || !options.lazy) {
+    // 如果不存在额外参数对象，或者不是延迟执行的，则立即执行一次副作用函数
     _effect.run()
   }
   const runner = _effect.run.bind(_effect) as ReactiveEffectRunner
@@ -225,8 +237,8 @@ export function trackEffects(
   }
 
   if (shouldTrack) {
-    dep.add(activeEffect!)
-    activeEffect!.deps.push(dep)
+    dep.add(activeEffect!) // 当前属性的dep收集订阅者
+    activeEffect!.deps.push(dep) // 即订阅主题
     if (__DEV__ && activeEffect!.onTrack) {
       activeEffect!.onTrack(
         Object.assign(
@@ -259,7 +271,7 @@ export function trigger(
     // collection being cleared
     // trigger all effects for target
     deps = [...depsMap.values()]
-  } else if (key === 'length' && isArray(target)) {
+  } else if (key === 'length' && isArray(target)) { // 对数组进行操作
     depsMap.forEach((dep, key) => {
       if (key === 'length' || key >= (newValue as number)) {
         deps.push(dep)
@@ -274,13 +286,14 @@ export function trigger(
     // also run for iteration key on ADD | DELETE | Map.SET
     switch (type) {
       case TriggerOpTypes.ADD:
-        if (!isArray(target)) {
+        if (!isArray(target)) { // 不是数组对象
           deps.push(depsMap.get(ITERATE_KEY))
           if (isMap(target)) {
             deps.push(depsMap.get(MAP_KEY_ITERATE_KEY))
           }
         } else if (isIntegerKey(key)) {
           // new index added to array -> length changes
+          // 新的下标添加到数组中，长度改变
           deps.push(depsMap.get('length'))
         }
         break
@@ -316,6 +329,7 @@ export function trigger(
     const effects: ReactiveEffect[] = []
     for (const dep of deps) {
       if (dep) {
+        // dep: new Set([effect, effect])
         effects.push(...dep)
       }
     }
