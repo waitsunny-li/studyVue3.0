@@ -76,11 +76,12 @@ export class ReactiveEffect<T = any> {
       // 如果当前effect已停用，直接返回原始函数
       return this.fn()
     }
-    // effectStack：存放当前副作用的栈，执行前会压入栈，结束后，会推出栈
+    // effectStack：存放当前副作用的栈，执行前会压入栈，结束后，会推出栈。
+    // 为何需要effectStack？：主要是为了解决嵌套问题
     if (!effectStack.includes(this)) {
       try {
         effectStack.push((activeEffect = this))
-        enableTracking()
+        enableTracking()  // 开启跟踪
 
         trackOpBit = 1 << ++effectTrackDepth
 
@@ -89,7 +90,7 @@ export class ReactiveEffect<T = any> {
         } else {
           cleanupEffect(this)
         }
-        return this.fn()
+        return this.fn() // 运行回调函数
       } finally {
         if (effectTrackDepth <= maxMarkerBits) {
           finalizeDepMarkers(this)
@@ -98,7 +99,7 @@ export class ReactiveEffect<T = any> {
         trackOpBit = 1 << --effectTrackDepth
 
         resetTracking()
-        effectStack.pop()
+        effectStack.pop() // 推出栈
         const n = effectStack.length
         activeEffect = n > 0 ? effectStack[n - 1] : undefined
       }
