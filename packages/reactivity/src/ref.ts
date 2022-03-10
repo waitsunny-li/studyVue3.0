@@ -24,6 +24,7 @@ type RefBase<T> = {
 }
 
 export function trackRefValue(ref: RefBase<any>) {
+  // isTracking()是由于effect(() => void)有关于ref的回调来判断的
   if (isTracking()) {
     ref = toRaw(ref)
     if (!ref.dep) {
@@ -100,9 +101,10 @@ class RefImpl<T> {
 
   constructor(value: T, public readonly __v_isShallow: boolean) {
     this._rawValue = __v_isShallow ? value : toRaw(value)
+    // 如果不是浅监听，相当于使用reactive(value),前提value是object对象
     this._value = __v_isShallow ? value : toReactive(value)
   }
-
+                                          
   get value() {
     trackRefValue(this)
     return this._value

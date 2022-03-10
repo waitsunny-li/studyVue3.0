@@ -73,7 +73,7 @@ export class ReactiveEffect<T = any> {
 
   run() {
     if (!this.active) {
-      // 如果当前effect已停用，直接返回原始函数
+      // 如果当前effect已停用(不收集依赖)，直接运行原始函数
       return this.fn()
     }
     // effectStack：存放当前副作用的栈，执行前会压入栈，结束后，会推出栈。
@@ -118,6 +118,8 @@ export class ReactiveEffect<T = any> {
 }
 
 function cleanupEffect(effect: ReactiveEffect) {
+  // 查询此动作的依赖对象
+  // 清除对象中的此动作
   const { deps } = effect
   if (deps.length) {
     for (let i = 0; i < deps.length; i++) {
