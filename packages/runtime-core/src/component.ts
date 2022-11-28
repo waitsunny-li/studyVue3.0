@@ -587,11 +587,12 @@ export function setupComponent(
 
   const { props, children } = instance.vnode
   const isStateful = isStatefulComponent(instance)
+  // 初始化props，并且对其进行proxy
   initProps(instance, props, isStateful, isSSR)
   initSlots(instance, children)
 
   const setupResult = isStateful
-    ? setupStatefulComponent(instance, isSSR)
+    ? setupStatefulComponent(instance, isSSR)  // 运行setup函数
     : undefined
   isInSSRComponentSetup = false
   return setupResult
@@ -631,6 +632,8 @@ function setupStatefulComponent(
   instance.accessCache = Object.create(null)
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
+  // 对上下文进行proxy，getter：会获取data、props，ctx、setupState中的属性
+  // markRaw：给当前对象，加入__v_skip属性，表示以后要代理该对象时，会跳过
   instance.proxy = markRaw(new Proxy(instance.ctx, PublicInstanceProxyHandlers))
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
@@ -641,16 +644,16 @@ function setupStatefulComponent(
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
-    setCurrentInstance(instance)
-    pauseTracking()
+    setCurrentInstance(instance)  // 设置当前实例
+    pauseTracking()  // 暂停跟踪
     const setupResult = callWithErrorHandling(
       setup,
       instance,
       ErrorCodes.SETUP_FUNCTION,
       [__DEV__ ? shallowReadonly(instance.props) : instance.props, setupContext]
     )
-    resetTracking()
-    unsetCurrentInstance()
+    resetTracking()  // 重置跟踪
+    unsetCurrentInstance()  // 当前实例为空
 
     if (isPromise(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance)
@@ -675,10 +678,12 @@ function setupStatefulComponent(
         )
       }
     } else {
+      // 处理setup返回的结果，以及回调用 finishComponentSetup
       handleSetupResult(instance, setupResult, isSSR)
     }
   } else {
-    finishComponentSetup(instance, isSSR)
+    // 对实例中template或者render进行甄别 ，render优先级更高，没有，则对template进行编辑成render函数，template也可以是DOM元素
+    finishComponentSetup(instance, isSSR)  
   }
 }
 
@@ -708,7 +713,8 @@ export function handleSetupResult(
     if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
       instance.devtoolsRawSetupState = setupResult
     }
-    instance.setupState = proxyRefs(setupResult)
+    // proxyRefs: setupResult如果是reactive,直接返回，否，进行proxy，并且，解构其中ref，可以不使用.value就可以获取到值
+    instance.setupState = proxyRefs(setupResult)  
     if (__DEV__) {
       exposeSetupStateOnRenderContext(instance)
     }
@@ -817,7 +823,7 @@ export function finishComponentSetup(
   if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
     setCurrentInstance(instance)
     pauseTracking()
-    applyOptions(instance)
+    applyOptions(instance)  // 兼容vue2.x 
     resetTracking()
     unsetCurrentInstance()
   }

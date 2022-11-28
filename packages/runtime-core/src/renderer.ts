@@ -362,13 +362,13 @@ function baseCreateRenderer(
     slotScopeIds = null,
     optimized = __DEV__ && isHmrUpdating ? false : !!n2.dynamicChildren
   ) => {
-    if (n1 === n2) {
+    if (n1 === n2) {  
       return
     }
 
     // patching & not same type, unmount old tree
     if (n1 && !isSameVNodeType(n1, n2)) {
-      anchor = getNextHostNode(n1)
+      anchor = getNextHostNode(n1) // 获取兄弟节点中其后的节点
       unmount(n1, parentComponent, parentSuspense, true)
       n1 = null
     }
@@ -582,7 +582,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     isSVG = isSVG || (n2.type as string) === 'svg'
-    if (n1 == null) {
+    if (n1 == null) { // 首次挂载操作
       mountElement(
         n2,
         container,
@@ -631,6 +631,7 @@ function baseCreateRenderer(
       // only do this in production since cloned trees cannot be HMR updated.
       el = vnode.el = hostCloneNode(vnode.el)
     } else {
+      // 创建元素并与VNode关联
       el = vnode.el = hostCreateElement(
         vnode.type as string,
         isSVG,
@@ -655,7 +656,7 @@ function baseCreateRenderer(
         )
       }
 
-      if (dirs) {
+      if (dirs) { // 触发名为created周期函数
         invokeDirectiveHook(vnode, null, parentComponent, 'created')
       }
       // props
@@ -1182,7 +1183,7 @@ function baseCreateRenderer(
       updateComponent(n1, n2, optimized)
     }
   }
-
+  // 挂载组件
   const mountComponent: MountComponentFn = (
     initialVNode,
     container,
@@ -1223,6 +1224,7 @@ function baseCreateRenderer(
       if (__DEV__) {
         startMeasure(instance, `init`)
       }
+      // 对setup进行初始化，setup会在初始化props和初始化slots之后运行，也是在beforeCreated之前运行
       setupComponent(instance)
       if (__DEV__) {
         endMeasure(instance, `init`)
@@ -1312,8 +1314,8 @@ function baseCreateRenderer(
 
         toggleRecurse(instance, false)
         // beforeMount hook
-        if (bm) {
-          invokeArrayFns(bm)
+        if (bm) { 
+          invokeArrayFns(bm) // 运行beforeMount： intance.bm 是一个数组，包含2.x版本的beforeMount以及3.xonBeforeMount,如果都有，都会执行
         }
         // onVnodeBeforeMount
         if (
@@ -2300,12 +2302,13 @@ function baseCreateRenderer(
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
 
+  // 渲染函数，把vnode转为真是的dom
   const render: RootRenderFunction = (vnode, container, isSVG) => {
     if (vnode == null) {
-      if (container._vnode) {
+      if (container._vnode) { // 卸载
         unmount(container._vnode, null, null, true)
       }
-    } else {
+    } else { // patch
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()

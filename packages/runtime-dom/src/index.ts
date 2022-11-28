@@ -63,6 +63,7 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// ensureRenderer() 返回一个对象 {render, hydrate, createApp}
 export const createApp = ((...args) => {
   const app = ensureRenderer().createApp(...args)
 
@@ -73,6 +74,7 @@ export const createApp = ((...args) => {
 
   const { mount } = app
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 获取挂载点的DOM元素
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
 

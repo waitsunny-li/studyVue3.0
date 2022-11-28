@@ -750,7 +750,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
       register((hook as Function).bind(publicThis))
     }
   }
-
+  // 注册生命周期：默认会使用当前的实例对象
   registerLifecycleHook(onBeforeMount, beforeMount)
   registerLifecycleHook(onMounted, mounted)
   registerLifecycleHook(onBeforeUpdate, beforeUpdate)

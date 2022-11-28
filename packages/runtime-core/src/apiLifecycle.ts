@@ -46,7 +46,7 @@ export function injectHook(
     if (prepend) {
       hooks.unshift(wrappedHook)
     } else {
-      hooks.push(wrappedHook)
+      hooks.push(wrappedHook)  // 生命周期类型函数：如bm为数组
     }
     return wrappedHook
   } else if (__DEV__) {

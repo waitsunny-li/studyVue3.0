@@ -42,7 +42,7 @@ function setStyle(
   name: string,
   val: string | string[]
 ) {
-  if (isArray(val)) {
+  if (isArray(val)) { // 如果是数组，再次循环递归操作
     val.forEach(v => setStyle(style, name, v))
   } else {
     if (name.startsWith('--')) {

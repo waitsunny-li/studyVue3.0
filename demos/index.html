@@ -1,0 +1,49 @@
+<!--
+ * @Author: liweilong
+ * @Date: 2022-03-28 13:38:28
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>练习</title>
+  <script src="../packages/vue/dist/vue.global.js"></script>
+</head>
+<body>
+
+  <div id="app"></div>
+
+  <script type="text/x-template" id="item-template">
+    <div class="title">{{msg}}</div>
+    <button @click="btnClick">我是按钮</button>
+  </script>
+  <script>
+    const App = {
+      template: `#item-template`,
+      setup() {
+        const msg = Vue.ref('我是信息')
+        const name = Vue.ref('崔狗蛋')
+        const btnClick = () => {
+          msg.value = 'jjjjj'
+        }
+
+        Vue.onBeforeMount(() => {
+          console.log('beforeMounted!')
+        })
+
+        Vue.onMounted(() => {
+          console.log('mounted!')
+        })
+        return {
+          msg,
+          name,
+          btnClick
+        }
+      }
+    }
+    let vm = Vue.createApp(App).mount("#app")
+  </script>
+</body>
+</html>

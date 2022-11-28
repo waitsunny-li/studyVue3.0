@@ -190,6 +190,7 @@ export function customRef<T>(factory: CustomRefFactory<T>): Ref<T> {
 export type ToRefs<T = any> = {
   [K in keyof T]: ToRef<T[K]>
 }
+// 将响应式对象转换为普通对象，其中结果对象的每个 property 都是指向原始对象相应 property 的 ref
 export function toRefs<T extends object>(object: T): ToRefs<T> {
   if (__DEV__ && !isProxy(object)) {
     console.warn(`toRefs() expects a reactive object but received a plain one.`)

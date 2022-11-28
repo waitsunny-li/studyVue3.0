@@ -325,7 +325,7 @@ export const PublicInstanceProxyHandlers: ProxyHandler<any> = {
         accessCache![key] = AccessTypes.OTHER
       }
     }
-
+    // publicPropertiesMap：保存着一些如$refs、$data、$emit 等公用的方法
     const publicGetter = publicPropertiesMap[key]
     let cssModule, globalProperties
     // public $xxx properties
@@ -470,6 +470,7 @@ export const RuntimeCompiledPublicInstanceProxyHandlers = /*#__PURE__*/ extend(
       return PublicInstanceProxyHandlers.get!(target, key, target)
     },
     has(_: ComponentRenderContext, key: string) {
+      // isGloballyWhitelisted：是否是内置对象
       const has = key[0] !== '_' && !isGloballyWhitelisted(key)
       if (__DEV__ && !has && PublicInstanceProxyHandlers.has!(_, key)) {
         warn(

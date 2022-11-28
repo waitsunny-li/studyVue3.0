@@ -37,7 +37,7 @@ let accessedAttrs: boolean = false
 export function markAttrsAccessed() {
   accessedAttrs = true
 }
-
+// 会使用编译后实例中的render函数
 export function renderComponentRoot(
   instance: ComponentInternalInstance
 ): VNode {
