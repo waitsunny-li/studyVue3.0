@@ -68,7 +68,8 @@ export function patchEvent(
   nextValue: EventValue | null,
   instance: ComponentInternalInstance | null = null
 ) {
-  // vei = vue event invokers
+  // vei = vue event invokers  
+  // el._vei = {"on-click": {value: Function, attached: Number}}
   const invokers = el._vei || (el._vei = {})
   const existingInvoker = invokers[rawName]
   if (nextValue && existingInvoker) {

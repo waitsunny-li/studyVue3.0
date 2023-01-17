@@ -741,7 +741,8 @@ let installWithProxy: (i: ComponentInternalInstance) => void
  * Note the exported method uses any to avoid d.ts relying on the compiler types.
  */
 export function registerRuntimeCompiler(_compile: any) {
-  compile = _compile
+  compile = _compile // 注册编译器
+  console.log("registerRuntimeCompiler =============> 注册编译器")
   installWithProxy = i => {
     if (i.render!._rc) {
       i.withProxy = new Proxy(i.ctx, RuntimeCompiledPublicInstanceProxyHandlers)

@@ -27,7 +27,7 @@ export const patchProp: DOMRendererOptions['patchProp'] = (
     patchStyle(el, prevValue, nextValue)
   } else if (isOn(key)) {
     // ignore v-model listeners
-    if (!isModelListener(key)) {
+    if (!isModelListener(key)) { // 事件patch
       patchEvent(el, key, prevValue, nextValue, parentComponent)
     }
   } else if (

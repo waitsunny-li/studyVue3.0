@@ -17,6 +17,7 @@ function compileToFunction(
   template: string | HTMLElement,
   options?: CompilerOptions
 ): RenderFunction {
+  console.log("compileToFunction ============> 编译器运行")
   if (!isString(template)) {
     if (template.nodeType) {
       template = template.innerHTML

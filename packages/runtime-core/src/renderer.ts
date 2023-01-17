@@ -293,6 +293,7 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
+  console.log("createRenderer ================> 创建编译器，返回{render, hydrate, createApp: createAppAPI(render, hydrate)}")
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
@@ -326,7 +327,6 @@ function baseCreateRenderer(
   if (__ESM_BUNDLER__ && !__TEST__) {
     initFeatureFlags()
   }
-
   const target = getGlobalThis()
   target.__VUE__ = true
   if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
@@ -643,7 +643,7 @@ function baseCreateRenderer(
       // being already rendered, e.g. `<select value>`
       if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
         hostSetElementText(el, vnode.children as string)
-      } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+      } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {// 递归children
         mountChildren(
           vnode.children as VNodeArrayChildren,
           el,
@@ -656,11 +656,11 @@ function baseCreateRenderer(
         )
       }
 
-      if (dirs) { // 触发名为created周期函数
+      if (dirs) { // 存在指令集合，就触发名为created周期函数
         invokeDirectiveHook(vnode, null, parentComponent, 'created')
       }
       // props
-      if (props) {
+      if (props) { // 节点属性
         for (const key in props) {
           if (key !== 'value' && !isReservedProp(key)) {
             hostPatchProp(
@@ -1263,7 +1263,7 @@ function baseCreateRenderer(
 
   const updateComponent = (n1: VNode, n2: VNode, optimized: boolean) => {
     const instance = (n2.component = n1.component)!
-    if (shouldUpdateComponent(n1, n2, optimized)) {
+    if (shouldUpdateComponent(n1, n2, optimized)) { // 确定是否有更新的必要
       if (
         __FEATURE_SUSPENSE__ &&
         instance.asyncDep &&
@@ -2304,6 +2304,7 @@ function baseCreateRenderer(
 
   // 渲染函数，把vnode转为真是的dom
   const render: RootRenderFunction = (vnode, container, isSVG) => {
+    console.log("render ===============> 触发render函数")
     if (vnode == null) {
       if (container._vnode) { // 卸载
         unmount(container._vnode, null, null, true)
@@ -2339,7 +2340,7 @@ function baseCreateRenderer(
   return {
     render,
     hydrate,
-    createApp: createAppAPI(render, hydrate)
+    createApp: createAppAPI(render, hydrate) // Vue.createApp(App)
   }
 }
 

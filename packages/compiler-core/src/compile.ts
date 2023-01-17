@@ -64,6 +64,7 @@ export function baseCompile(
 ): CodegenResult {
   const onError = options.onError || defaultOnError
   const isModuleMode = options.mode === 'module'
+  console.log('baseCompile 开始')
   /* istanbul ignore if */
   if (__BROWSER__) {
     if (options.prefixIdentifiers === true) {

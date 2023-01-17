@@ -179,6 +179,7 @@ export function createAppAPI<HostElement>(
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   return function createApp(rootComponent, rootProps = null) {
+    console.log("createAppAPI -> createApp: =========> 创建app对象，并使用其mount函数挂载")
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
       rootProps = null
@@ -279,6 +280,8 @@ export function createAppAPI<HostElement>(
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
+        // 开始首次挂载， 如：Vue.createApp(App).mount("#app")
+        console.log("first Mount ================> app开始首次挂载")
         if (!isMounted) {
           const vnode = createVNode(
             rootComponent as ConcreteComponent,

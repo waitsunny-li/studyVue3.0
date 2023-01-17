@@ -6,7 +6,7 @@ type Style = string | Record<string, string | string[]> | null
 export function patchStyle(el: Element, prev: Style, next: Style) {
   const style = (el as HTMLElement).style
   const isCssString = isString(next)
-  if (next && !isCssString) {
+  if (next && !isCssString) { // 存在值，且值不是字符串
     for (const key in next) {
       setStyle(style, key, next[key])
     }
