@@ -473,7 +473,7 @@ export function createComponentInstance(
     exposed: null,
     exposeProxy: null,
     withProxy: null,
-    provides: parent ? parent.provides : Object.create(appContext.provides),
+    provides: parent ? parent.provides : Object.create(appContext.provides), // 此属性会继承父的
     accessCache: null!,
     renderCache: [],
 
@@ -592,7 +592,7 @@ export function setupComponent(
   initSlots(instance, children)
 
   const setupResult = isStateful
-    ? setupStatefulComponent(instance, isSSR)  // 运行setup函数
+    ? setupStatefulComponent(instance, isSSR) // 运行setup函数
     : undefined
   isInSSRComponentSetup = false
   return setupResult
@@ -644,16 +644,16 @@ function setupStatefulComponent(
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
-    setCurrentInstance(instance)  // 设置当前实例
-    pauseTracking()  // 暂停跟踪
+    setCurrentInstance(instance) // 设置当前实例
+    pauseTracking() // 暂停跟踪
     const setupResult = callWithErrorHandling(
       setup,
       instance,
       ErrorCodes.SETUP_FUNCTION,
       [__DEV__ ? shallowReadonly(instance.props) : instance.props, setupContext]
     )
-    resetTracking()  // 重置跟踪
-    unsetCurrentInstance()  // 当前实例为空
+    resetTracking() // 重置跟踪
+    unsetCurrentInstance() // 当前实例为空
 
     if (isPromise(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance)
@@ -683,7 +683,7 @@ function setupStatefulComponent(
     }
   } else {
     // 对实例中template或者render进行甄别 ，render优先级更高，没有，则对template进行编辑成render函数，template也可以是DOM元素
-    finishComponentSetup(instance, isSSR)  
+    finishComponentSetup(instance, isSSR)
   }
 }
 
@@ -714,7 +714,7 @@ export function handleSetupResult(
       instance.devtoolsRawSetupState = setupResult
     }
     // proxyRefs: setupResult如果是reactive,直接返回，否，进行proxy，并且，解构其中ref，可以不使用.value就可以获取到值
-    instance.setupState = proxyRefs(setupResult)  
+    instance.setupState = proxyRefs(setupResult)
     if (__DEV__) {
       exposeSetupStateOnRenderContext(instance)
     }
@@ -742,7 +742,7 @@ let installWithProxy: (i: ComponentInternalInstance) => void
  */
 export function registerRuntimeCompiler(_compile: any) {
   compile = _compile // 注册编译器
-  console.log("registerRuntimeCompiler =============> 注册编译器")
+  console.log('registerRuntimeCompiler =============> 注册编译器')
   installWithProxy = i => {
     if (i.render!._rc) {
       i.withProxy = new Proxy(i.ctx, RuntimeCompiledPublicInstanceProxyHandlers)
@@ -824,7 +824,7 @@ export function finishComponentSetup(
   if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
     setCurrentInstance(instance)
     pauseTracking()
-    applyOptions(instance)  // 兼容vue2.x 
+    applyOptions(instance) // 兼容vue2.x
     resetTracking()
     unsetCurrentInstance()
   }

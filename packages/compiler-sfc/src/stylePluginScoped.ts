@@ -5,15 +5,21 @@ import { warn } from './warn'
 const animationNameRE = /^(-\w+-)?animation-name$/
 const animationRE = /^(-\w+-)?animation$/
 
+// postCss 插件
+// PostCss 插件用于处理 CSS 代码，接收一个css文件并提供一个API来分析、转换和修改 CSS 规则（通过吧css规则转化成一个抽象语法树的方式）
+// 跟babel类似，babel处理的是js代码，而postcss处理的是css代码
 const scopedPlugin: PluginCreator<string> = (id = '') => {
   const keyframes = Object.create(null)
   const shortId = id.replace(/^data-v-/, '')
 
   return {
+    // 定义postCss插件名称
     postcssPlugin: 'vue-sfc-scoped',
+    // 处理css的AST
     Rule(rule) {
       processRule(id, rule)
     },
+    // 处理@相关的css， 例如media  keyframes
     AtRule(node) {
       if (
         /-?keyframes$/.test(node.name) &&
@@ -23,6 +29,7 @@ const scopedPlugin: PluginCreator<string> = (id = '') => {
         keyframes[node.params] = node.params = node.params + '-' + shortId
       }
     },
+    // 最后执行，而且只处理一次
     OnceExit(root) {
       if (Object.keys(keyframes).length) {
         // If keyframes are found in this <style>, find and rewrite animation names

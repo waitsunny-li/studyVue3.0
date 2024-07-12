@@ -20,6 +20,7 @@ export function provide<T>(key: InjectionKey<T> | string | number, value: T) {
     const parentProvides =
       currentInstance.parent && currentInstance.parent.provides
     if (parentProvides === provides) {
+      // 相等，是因为是其子组件，在初始化组件实例时，该provides属性会被赋值父组件的值
       provides = currentInstance.provides = Object.create(parentProvides)
     }
     // TS doesn't allow symbol as index type

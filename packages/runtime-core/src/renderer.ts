@@ -293,7 +293,9 @@ export function createRenderer<
   HostNode = RendererNode,
   HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>) {
-  console.log("createRenderer ================> 创建编译器，返回{render, hydrate, createApp: createAppAPI(render, hydrate)}")
+  console.log(
+    'createRenderer ================> 创建编译器，返回{render, hydrate, createApp: createAppAPI(render, hydrate)}'
+  )
   return baseCreateRenderer<HostNode, HostElement>(options)
 }
 
@@ -332,7 +334,7 @@ function baseCreateRenderer(
   if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
     setDevtoolsHook(target.__VUE_DEVTOOLS_GLOBAL_HOOK__, target)
   }
-
+  // 为了跨端，不止针对浏览器对应的api，因此使用传递的配置项
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -362,7 +364,7 @@ function baseCreateRenderer(
     slotScopeIds = null,
     optimized = __DEV__ && isHmrUpdating ? false : !!n2.dynamicChildren
   ) => {
-    if (n1 === n2) {  
+    if (n1 === n2) {
       return
     }
 
@@ -582,7 +584,8 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     isSVG = isSVG || (n2.type as string) === 'svg'
-    if (n1 == null) { // 首次挂载操作
+    if (n1 == null) {
+      // 首次挂载操作
       mountElement(
         n2,
         container,
@@ -631,7 +634,7 @@ function baseCreateRenderer(
       // only do this in production since cloned trees cannot be HMR updated.
       el = vnode.el = hostCloneNode(vnode.el)
     } else {
-      // 创建元素并与VNode关联
+      // 创建真实dom元素与VNode对象关联
       el = vnode.el = hostCreateElement(
         vnode.type as string,
         isSVG,
@@ -643,7 +646,8 @@ function baseCreateRenderer(
       // being already rendered, e.g. `<select value>`
       if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
         hostSetElementText(el, vnode.children as string)
-      } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {// 递归children
+      } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // 递归children
         mountChildren(
           vnode.children as VNodeArrayChildren,
           el,
@@ -656,11 +660,13 @@ function baseCreateRenderer(
         )
       }
 
-      if (dirs) { // 存在指令集合，就触发名为created周期函数
+      if (dirs) {
+        // 存在指令集合，就触发名为created周期函数
         invokeDirectiveHook(vnode, null, parentComponent, 'created')
       }
       // props
-      if (props) { // 节点属性
+      if (props) {
+        // 节点属性
         for (const key in props) {
           if (key !== 'value' && !isReservedProp(key)) {
             hostPatchProp(
@@ -1263,7 +1269,8 @@ function baseCreateRenderer(
 
   const updateComponent = (n1: VNode, n2: VNode, optimized: boolean) => {
     const instance = (n2.component = n1.component)!
-    if (shouldUpdateComponent(n1, n2, optimized)) { // 确定是否有更新的必要
+    if (shouldUpdateComponent(n1, n2, optimized)) {
+      // 确定是否有更新的必要
       if (
         __FEATURE_SUSPENSE__ &&
         instance.asyncDep &&
@@ -1314,7 +1321,7 @@ function baseCreateRenderer(
 
         toggleRecurse(instance, false)
         // beforeMount hook
-        if (bm) { 
+        if (bm) {
           invokeArrayFns(bm) // 运行beforeMount： intance.bm 是一个数组，包含2.x版本的beforeMount以及3.xonBeforeMount,如果都有，都会执行
         }
         // onVnodeBeforeMount
@@ -1641,6 +1648,7 @@ function baseCreateRenderer(
 
     // children has 3 possibilities: text, array or no children.
     if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      // 文本节点
       // text children fast path
       if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
         unmountChildren(c1 as VNode[], parentComponent, parentSuspense)
@@ -2304,12 +2312,14 @@ function baseCreateRenderer(
 
   // 渲染函数，把vnode转为真是的dom
   const render: RootRenderFunction = (vnode, container, isSVG) => {
-    console.log("render ===============> 触发render函数")
+    console.log('render ===============> 触发render函数')
     if (vnode == null) {
-      if (container._vnode) { // 卸载
+      if (container._vnode) {
+        // 卸载
         unmount(container._vnode, null, null, true)
       }
-    } else { // patch
+    } else {
+      // patch
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()

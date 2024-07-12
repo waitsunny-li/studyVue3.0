@@ -21,7 +21,19 @@
       "console": "integratedTerminal",
       "sourceMaps": true,
       "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Vue 3 Launch",
+      "url": "http://localhost:5000",
+      "webRoot": "${workspaceFolder}",
+      "breakOnLoad": true,
+      "program": "${workspaceFolder}/",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
       }
     }
   ]

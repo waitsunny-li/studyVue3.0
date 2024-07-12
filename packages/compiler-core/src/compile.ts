@@ -109,7 +109,7 @@ export function baseCompile(
       )
     })
   )
-
+  // 生成渲染函数render
   return generate(
     ast,
     extend({}, options, {

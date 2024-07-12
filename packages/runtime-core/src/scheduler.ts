@@ -80,7 +80,11 @@ function findInsertionIndex(id: number) {
 
   return start
 }
-
+// job 其实就是组件实例上面的update方法
+// 生成instance.update方法
+// const update = (instance.update = () => effect.run())
+// update.id = instance.uid
+// queueJob(update)
 export function queueJob(job: SchedulerJob) {
   // the dedupe search uses the startIndex argument of Array.includes()
   // by default the search index includes the current job that is being run
@@ -99,6 +103,8 @@ export function queueJob(job: SchedulerJob) {
     if (job.id == null) {
       queue.push(job)
     } else {
+      // 按照id 0,1,2,3排序
+      // 如果id已经存在，则插入到合适的位置
       queue.splice(findInsertionIndex(job.id), 0, job)
     }
     queueFlush()
@@ -236,6 +242,9 @@ function flushJobs(seen?: CountMap) {
   //    priority number)
   // 2. If a component is unmounted during a parent component's update,
   //    its update can be skipped.
+  // 更新之前确保队列是正确的
+  // 先创建父组件在创建子组件，所以父组件的渲染函数优先级更小
+  // 如果一个组件在父组件更新期间被卸载，那么它的更新可以跳过
   queue.sort((a, b) => getId(a) - getId(b))
 
   // conditional usage of checkRecursiveUpdate must be determined out of

@@ -104,7 +104,7 @@ class RefImpl<T> {
     // 如果不是浅监听，相当于使用reactive(value),前提value是object对象
     this._value = __v_isShallow ? value : toReactive(value)
   }
-                                          
+
   get value() {
     trackRefValue(this)
     return this._value
@@ -140,7 +140,7 @@ const shallowUnwrapHandlers: ProxyHandler<any> = {
     }
   }
 }
-
+// 组件中的 setup 函数所返回的数据会传递给 proxyRefs 函数进行处理
 export function proxyRefs<T extends object>(
   objectWithRefs: T
 ): ShallowUnwrapRef<T> {
@@ -233,7 +233,7 @@ export function toRef<T extends object, K extends keyof T>(
   key: K,
   defaultValue: T[K]
 ): ToRef<Exclude<T[K], undefined>>
-
+// 解决响应式丢失问题
 export function toRef<T extends object, K extends keyof T>(
   object: T,
   key: K,
